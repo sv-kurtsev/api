@@ -1,6 +1,7 @@
 package videoGameDatabaseAPITests;
 
 import dataEntity.videoGame.GameResponse;
+import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
@@ -8,12 +9,17 @@ import static io.restassured.RestAssured.given;
 public class UpdateVideoGame extends RequestAndResponseSpecification {
     @Test
     public void updateGame() {
-        GameResponse gameResponse = new GameResponse(78, "2021-11-07", "Updated Test Game", "Perfect", 4, "Shooter");
+        Response response = given()
+                            .when()
+                                .get("videogames/2");
+        GameResponse gameResponse = response.as(GameResponse.class);
+
+        GameResponse updateGame = new GameResponse(gameResponse.getReviewScore(), gameResponse.getReleaseDate(), "Updated Test Game", gameResponse.getRating(), gameResponse.getId(), "Updated category");
                 given()
-                    .body(gameResponse)
+                    .body(updateGame)
                     .header("Content-Type", "application/json")
                 .when()
-                    .put("videogames/4")
+                    .put("videogames/2")
                 .then()
                     .log()
                     .all();
